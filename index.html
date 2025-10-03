@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teachers' Day Messages</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 550px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 8px 25px rgba(44, 62, 80, 0.1);
+            border: 3px solid #bdc3c7;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #34495e;
+            margin: 10px 0;
+            font-size: 26px;
+        }
+
+        .apple {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 2px dashed #bdc3c7;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        textarea {
+            height: 90px;
+            resize: none;
+        }
+
+        .btn {
+            background: #34495e;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 15px;
+            margin: 8px 5px;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: #2c3e50;
+        }
+
+        .btn-view {
+            background: #7f8c8d;
+        }
+
+        .btn-view:hover {
+            background: #6c7b7d;
+        }
+
+        .message-card {
+            background: white;
+            padding: 18px;
+            margin: 12px 0;
+            border-radius: 10px;
+            border-left: 4px solid #34495e;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        .message-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .message-text {
+            color: #34495e;
+            line-height: 1.5;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .code-display {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 15px 0;
+            border: 2px solid #bdc3c7;
+        }
+
+        .code-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            letter-spacing: 2px;
+        }
+
+        .no-messages {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 25px;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #bdc3c7;
+            font-size: 18px;
+        }
+
+        .small-text {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="apple">🍎</div>
+            <h1>Teachers' Day Messages</h1>
+            <p style="color: #7f8c8d;">Share messages across devices!</p>
+        </div>
+
+        <div class="divider">⭐ ～ ⭐ ～ ⭐</div>
+
+        <div class="section">
+            <div class="section-title">✏️ Write Your Message</div>
+            <form id="messageForm">
+                <input type="text" id="studentName" placeholder="Your name" required>
+                <textarea id="messageText" placeholder="Write your heartfelt message to teachers..." required></textarea>
+                <button type="submit" class="btn">Save Message 💝</button>
+            </form>
+            <div id="codeSection" class="hidden">
+                <p style="color: #2c3e50; margin: 15px 0;">Your message code:</p>
+                <div class="code-display">
+                    <div class="code-text" id="messageCode"></div>
+                </div>
+                <p class="small-text">Share this code so others can view your message!</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">👀 View Messages</div>
+            <input type="text" id="viewCode" placeholder="Enter message code" maxlength="6">
+            <button type="button" class="btn btn-view" onclick="viewMessage()">View Message</button>
+            <button type="button" class="btn btn-view" onclick="viewAllMessages()">View All Messages</button>
+        </div>
+
+        <div class="section hidden" id="messagesSection">
+            <div class="section-title">💌 Messages</div>
+            <div id="messagesList">
+                <div class="no-messages">No messages found! 🌟</div>
+            </div>
+            <button type="button" class="btn" onclick="hideMessages()">Hide Messages</button>
+        </div>
+    </div>
+
+    <script>
+        // Simple storage system using localStorage with codes
+        let allMessages = JSON.parse(localStorage.getItem('teacherMessages') || '{}');
+
+        function generateCode() {
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+
+        document.getElementById('messageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('studentName').value.trim();
+            const message = document.getElementById('messageText').value.trim();
+            
+            if (name && message) {
+                const code = generateCode();
+                const messageData = {
+                    name: name,
+                    message: message,
+                    date: new Date().toLocaleDateString(),
+                    code: code
+                };
+                
+                // Save message with code
+                allMessages[code] = messageData;
+                localStorage.setItem('teacherMessages', JSON.stringify(allMessages));
+                
+                // Show code to user
+                document.getElementById('messageCode').textContent = code;
+                document.getElementById('codeSection').classList.remove('hidden');
+                
+                // Clear form
+                document.getElementById('studentName').value = '';
+                document.getElementById('messageText').value = '';
+                
+                alert('Message saved! 🎉 Share your code with others!');
+            }
+        });
+
+        function viewMessage() {
+            const code = document.getElementById('viewCode').value.trim().toUpperCase();
+            
+            if (!code) {
+                alert('Please enter a message code! 📝');
+                return;
+            }
+            
+            if (allMessages[code]) {
+                displaySingleMessage(allMessages[code]);
+            } else {
+                alert('Message not found! Check the code and try again. 🔍');
+            }
+        }
+
+        function viewAllMessages() {
+            const messages = Object.values(allMessages);
+            if (messages.length === 0) {
+                alert('No messages saved yet! 📭');
+                return;
+            }
+            displayAllMessages(messages);
+        }
+
+        function displaySingleMessage(message) {
+            const messagesList = document.getElementById('messagesList');
+            messagesList.innerHTML = `
+                <div class="message-card">
+                    <div class="message-name">From: ${message.name} ⭐</div>
+                    <div class="message-text">${message.message}</div>
+                    <div class="small-text">Code: ${message.code} | Date: ${message.date}</div>
+                </div>
+            `;
+            document.getElementById('messagesSection').classList.remove('hidden');
+        }
+
+        function displayAllMessages(messages) {
+            const messagesList = document.getElementById('messagesList');
+            
+            if (messages.length === 0) {
+                messagesList.innerHTML = '<div class="no-messages">No messages found! 🌟</div>';
+                return;
+            }
+            
+            let html = '';
+            for (let i = 0; i < messages.length; i++) {
+                const msg = messages[i];
+                html += `
+                    <div class="message-card">
+                        <div class="message-name">From: ${msg.name} ⭐</div>
+                        <div class="message-text">${msg.message}</div>
+                        <div class="small-text">Code: ${msg.code} | Date: ${msg.date}</div>
+                    </div>
+                `;
+            }
+            messagesList.innerHTML = html;
+            document.getElementById('messagesSection').classList.remove('hidden');
+        }
+
+        function hideMessages() {
+            document.getElementById('messagesSection').classList.add('hidden');
+            document.getElementById('viewCode').value = '';
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'988bc162d67dfee5',t:'MTc1OTQ4NzMzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
